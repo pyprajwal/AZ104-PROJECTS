@@ -1,4 +1,5 @@
 This project demonstrates the use of Azure app design to automate user Onboarding processes usually done by System admin/Service desk engineers. It streamlines creating a user account and adds to relevant groups on user titles and department basics.
+![image](https://github.com/pyprajwal/AZ104-PROJECTS/assets/61958453/2c59ba1b-2079-402a-8c7f-162da11020b2)
 
 1. Azure AD (Entra ID) setup:
 
