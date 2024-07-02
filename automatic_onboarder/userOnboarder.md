@@ -1,5 +1,7 @@
 This project demonstrates the use of Azure app design to automate user Onboarding processes usually done by System admin/Service desk engineers. It streamlines creating a user account and adds to relevant groups on user titles and department basics.
 
+![alt text](image.png)
+
 1. Azure AD (Entra ID) setup:
 
    We need an Azure active directory setup first where we can create user accounts and groups.
@@ -7,7 +9,7 @@ This project demonstrates the use of Azure app design to automate user Onboardin
 2. HTTPS trigger/Receive mail:
 
    Setup HTTPS trigger or when specific mail like from HR is received we can initiate the flow.
-   It should triggered along with necessary details needed for account creation
+   It should triggered along with necessary details needed for account creation.
 
 3. Create a user account:
 
