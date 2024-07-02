@@ -107,7 +107,7 @@ To display the help message:
 
     `Do you want to generate the link for example.txt (y/n): y`
 
-    If you choose `y`, the script will display the shareable link.
+    If you choose `y`, the script will generate the shareable link.
 
 2.  **Listing Blobs**
 
