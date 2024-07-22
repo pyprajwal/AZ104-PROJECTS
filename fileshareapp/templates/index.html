@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">  <!-- Specify character encoding for the HTML document -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- Set viewport settings for responsive design -->
+    <title>Upload Photos</title>  <!-- Title of the web page that appears in the browser tab -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">  <!-- Link to Bootstrap CSS for styling -->
+    <script>
+        // JavaScript code to handle file input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait until the DOM is fully loaded before attaching event handlers
+            document.getElementById('file').addEventListener('change', function() {
+                var fileList = this.files;  // Get the list of selected files
+                var output = document.getElementById('fileList');  // Get the element where file names will be displayed
+                output.innerHTML = '';  // Clear any previous file names
+                for (var i = 0; i < fileList.length; i++) {  // Loop through each selected file
+                    output.innerHTML += '<li>' + fileList[i].name + '</li>';  // Append the file name to the list
+                }
+            });
+        });
+    </script>
+</head>
+<body class="bg-light">  <!-- Set background color for the body -->
+    <div class="container mt-5">  <!-- Container to center content and add margin on top -->
+        <div class="card">  <!-- Bootstrap card component to style the form -->
+            <div class="card-body">  <!-- Body of the card -->
+                <h1 class="card-title">Secure File Storage</h1>  <!-- Heading of the card -->
+                <form method="post" action="/upload-photos" enctype="multipart/form-data">  <!-- Form to upload files -->
+                    <div class="form-group">  <!-- Bootstrap form group to style input elements -->
+                        <label for="file" class="btn btn-primary btn-block">Choose your files and upload</label>  <!-- Custom label styled as a button -->
+                        <input type="file" name="photos" id="file" class="form-control-file" multiple hidden>  <!-- File input, hidden and styled -->
+                    </div>
+                    <ul id="fileList"></ul>  <!-- Unordered list to display selected file names -->
+                    <button type="submit" class="btn btn-success btn-block">Upload</button>  <!-- Submit button to send the form -->
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

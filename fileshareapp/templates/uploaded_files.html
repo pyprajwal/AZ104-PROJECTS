@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">  <!-- Specify character encoding for the HTML document -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- Set viewport settings for responsive design -->
+    <title>Upload Results</title>  <!-- Title of the web page that appears in the browser tab -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">  <!-- Link to Bootstrap CSS for styling -->
+    <script>
+        // JavaScript function to copy text to the clipboard
+        function copyToClipboard(elementId) {
+            var copyText = document.getElementById(elementId);  // Get the element containing the text to copy
+            var textArea = document.createElement("textarea");  // Create a textarea element to temporarily hold the text
+            textArea.value = copyText.textContent;  // Set the textarea's value to the text content of the target element
+            document.body.appendChild(textArea);  // Append the textarea to the document body
+            textArea.select();  // Select the text in the textarea
+            document.execCommand("Copy");  // Execute the copy command to copy the text to the clipboard
+            textArea.remove();  // Remove the textarea from the document
+            copyText.textContent;  // This line is redundant and can be removed
+        }
+    </script>
+</head>
+<body class="bg-light">  <!-- Set background color for the body -->
+    <div class="container mt-5">  <!-- Container to center content and add margin on top -->
+        <div class="card">  <!-- Bootstrap card component to style the results display -->
+            <div class="card-body">  <!-- Body of the card -->
+                <h1 class="card-title">Uploaded File</h1>  <!-- Heading of the card -->
+                <p class="card-text">Uploaded: <br />{{ filenames | safe }}</p>  <!-- Display the filenames of uploaded files -->
+                <div class="card-text">  <!-- Container for displaying image links -->
+                    {{ img_html | safe }}  <!-- Render the HTML for image links and copy buttons -->
+                </div>
+                <a href="/" class="btn btn-primary mt-3">Upload More Files</a>  <!-- Button to navigate back to the upload form -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
