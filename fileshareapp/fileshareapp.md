@@ -4,6 +4,8 @@
 
 This Flask application allows users to upload files to Azure Blob Storage. The application provides a simple interface for selecting and uploading multiple files, and displays the results with links to the uploaded files. Users can also copy the links to the clipboard for easy sharing.
 
+![alt text](image.png)
+
 ## Features
 
 - **File Upload**: Upload multiple files to Azure Blob Storage.
