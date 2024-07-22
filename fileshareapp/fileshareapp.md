@@ -31,9 +31,9 @@ Set the following environment variables for configuration:
 
 1.  **Clone the Repository**:
 
-        `git clone <repository-url>
+        git clone <repository-url>
 
-    cd <repository-directory>`
+         cd <repository-directory>
 
 2.  **Install Dependencies**:
 
