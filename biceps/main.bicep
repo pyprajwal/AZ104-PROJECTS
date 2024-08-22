@@ -33,14 +33,20 @@ param env string
 @description('The deployment-specific suffix to make resource names unique.')
 param resourceSuffix string = uniqueString(resourceGroup().id, deployment().name)
 
-var virtualNetworkName = '${resourceSuffix}-${env}-vnet'
-var virtualMachineName = '${resourceSuffix}-${env}-VM'
-var networkInterfaceName = '${resourceSuffix}-${env}-INTF'
-var publicIPAddressName = '${resourceSuffix}-${env}-pubIP'
-var networkSecurityGroupName = '${resourceSuffix}-${env}-NSG'
-var virtualMachineOSDiskName = '${resourceSuffix}-${env}-DISK'
+@description('The number of virtual machines to deploy.')
+param numberOfVMs int = 2
 
 param virtualMachineImageReference object
+
+var virtualNetworkNamePrefix = '${resourceSuffix}-${env}-vnet'
+var networkInterfaceNamePrefix = '${resourceSuffix}-${env}-nic'
+var publicIPAddressNamePrefix = '${resourceSuffix}-${env}-pubIP'
+var networkSecurityGroupName = '${resourceSuffix}-${env}-nsg'
+var virtualMachineNamePrefix = '${resourceSuffix}-${env}-vm'
+var virtualMachineOSDiskName = '${resourceSuffix}-${env}-osdisk'
+var publicIPAddressNames = [for i in range(0, numberOfVMs): '${publicIPAddressNamePrefix}-${i}']
+var networkInterfaceNames = [for i in range(0, numberOfVMs): '${networkInterfaceNamePrefix}-${i}']
+var virtualNetworkName = [for i in range(0, numberOfVMs): '${virtualNetworkNamePrefix}-${i}']
 
 module networkSecurityGroupModule 'modules/networkSecurityGroup.bicep' = {
   name: 'networkSecurityGroupDeployment'
@@ -50,86 +56,56 @@ module networkSecurityGroupModule 'modules/networkSecurityGroup.bicep' = {
   }
 }
 
-module publicIPAddressModule 'modules/publicIPAddress.bicep' = {
-  name: 'publicIPAddressDeployment'
-  params: {
-    location: location
-    publicIPAddressName: publicIPAddressName
-    publicIPAddressSkuName: publicIPAddressSkuName
+module virtualNetworkModule 'modules/virtualNetwork.bicep' = [
+  for i in range(0, numberOfVMs): {
+    name: 'virtualNetworkDeployment-${i}'
+    params: {
+      location: location
+      virtualNetworkName: virtualNetworkName[i]
+      virtualNetworkAddressPrefix: virtualNetworkAddressPrefix
+      virtualNetworkDefaultSubnetAddressPrefix: virtualNetworkDefaultSubnetAddressPrefix
+    }
   }
-}
+]
 
-module virtualNetworkModule 'modules/virtualNetwork.bicep' = {
-  name: 'virtualNetworkDeployment'
-  params: {
-    location: location
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkAddressPrefix: virtualNetworkAddressPrefix
-    virtualNetworkDefaultSubnetAddressPrefix: virtualNetworkDefaultSubnetAddressPrefix
+module publicIPAddressModule 'modules/publicIPAddress.bicep' = [
+  for i in range(0, numberOfVMs): {
+    name: 'publicIPAddressDeployment-${i}'
+    params: {
+      location: location
+      publicIPAddressName: publicIPAddressNames[i]
+      publicIPAddressSkuName: publicIPAddressSkuName
+    }
   }
-}
+]
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-08-01' = {
-  name: virtualMachineName
-  location: location
-  properties: {
-    hardwareProfile: {
-      vmSize: virtualMachineSizeName
-    }
-    storageProfile: {
-      imageReference: virtualMachineImageReference
-      osDisk: {
-        osType: 'Linux'
-        name: virtualMachineOSDiskName
-        createOption: 'FromImage'
-        caching: 'ReadWrite'
-        managedDisk: {
-          storageAccountType: virtualMachineManagedDiskStorageAccountType
-        }
-        deleteOption: 'Delete'
-        diskSizeGB: 30
-      }
-    }
-    osProfile: {
-      computerName: virtualMachineName
-      adminUsername: virtualMachineAdminUsername
-      adminPassword: virtualMachineAdminPassword
-      linuxConfiguration: {
-        disablePasswordAuthentication: false
-        provisionVMAgent: true
-        patchSettings: {
-          patchMode: 'ImageDefault'
-          assessmentMode: 'ImageDefault'
-        }
-        enableVMAgentPlatformUpdates: false
-      }
-      allowExtensionOperations: true
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: networkInterfaceModule.outputs.networkInterfaceID
-          properties: {
-            deleteOption: 'Detach'
-          }
-        }
-      ]
-    }
-    diagnosticsProfile: {
-      bootDiagnostics: {
-        enabled: true
-      }
+module networkInterfaceModule 'modules/networkInterface.bicep' = [
+  for i in range(0, numberOfVMs): {
+    name: 'networkInterfaceDeployment-${i}'
+    params: {
+      location: location
+      networkInterfaceName: networkInterfaceNames[i]
+      publicIPAddressId: publicIPAddressModule[i].outputs.publicIPAddressId
+      defaultSubnetId: virtualNetworkModule[i].outputs.defaultSubnetId
+      networkSecurityGroupId: networkSecurityGroupModule.outputs.networkSecurityGroupId
     }
   }
-}
+]
 
-module networkInterfaceModule 'modules/networkInterface.bicep' = {
-  name: 'networkInterfaceDeployment'
-  params: {
-    defaultSubnetId: virtualNetworkModule.outputs.defaultSubnetId
-    networkSecurityGroupId: networkSecurityGroupModule.outputs.networkSecurityGroupId
-    publicIPAddressId: publicIPAddressModule.outputs.publicIPAddressId
-    networkInterfaceName: networkInterfaceName
-    location: location
+module virtualMachineModule 'modules/virtualMachine.bicep' = [
+  for i in range(0, numberOfVMs): {
+    name: 'virtualMachineDeployment-${i}'
+    params: {
+      location: location
+      virtualMachineSizeName: virtualMachineSizeName
+      virtualMachineManagedDiskStorageAccountType: virtualMachineManagedDiskStorageAccountType
+      virtualMachineAdminUsername: virtualMachineAdminUsername
+      virtualMachineAdminPassword: virtualMachineAdminPassword
+      virtualMachineName: '${virtualMachineNamePrefix}-${i}'
+      virtualMachineOSDiskName: '${virtualMachineOSDiskName}-${i}'
+      virtualMachineImageReference: virtualMachineImageReference
+      networkInterfaceId: networkInterfaceModule[i].outputs.networkInterfaceId
+      networkInterfaceName: networkInterfaceNames[i]
+    }
   }
-}
+]

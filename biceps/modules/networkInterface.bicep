@@ -1,11 +1,16 @@
+@description('The location where resources are deployed.')
 param location string
 
+@description('The name of the network interface to deploy.')
 param networkInterfaceName string
 
+@description('The ID of the public IP address to associate with the network interface.')
 param publicIPAddressId string
 
+@description('The ID of the default subnet in the virtual network.')
 param defaultSubnetId string
 
+@description('The ID of the network security group to associate with the network interface.')
 param networkSecurityGroupId string
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2022-05-01' = {
@@ -19,13 +24,6 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2022-05-01' = {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
             id: publicIPAddressId
-            properties: {
-              deleteOption: 'Detach'
-            }
-            sku: {
-              name: 'Basic'
-              tier: 'Regional'
-            }
           }
           subnet: {
             id: defaultSubnetId
@@ -39,10 +37,10 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2022-05-01' = {
     enableIPForwarding: false
     disableTcpStateTracking: false
     networkSecurityGroup: {
-      // id: networkSecurityGroupModule.outputs.networkSecurityGroupId
       id: networkSecurityGroupId
     }
     nicType: 'Standard'
   }
 }
-output networkInterfaceID string = networkInterface.id
+
+output networkInterfaceId string = networkInterface.id
