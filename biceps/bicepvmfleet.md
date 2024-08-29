@@ -17,6 +17,7 @@ This project contains Bicep templates for deploying an multiple Azure Virtual Ma
 - [License](#license)
 
 ## Overview
+![image](https://github.com/user-attachments/assets/401f9315-a0f0-44b7-b7b6-e5c914fa3772)
 
 This project provides an Azure Bicep template that allows you to deploy a Virtual Machine along with all the necessary networking components in a single deployment. The template includes:
 
