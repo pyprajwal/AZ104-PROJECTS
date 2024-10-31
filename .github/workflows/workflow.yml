@@ -1,6 +1,6 @@
 name: deploy-toy-website
 
-on: [workflow_dispatch]
+on: [push]
 
 jobs:
   say-hello:
